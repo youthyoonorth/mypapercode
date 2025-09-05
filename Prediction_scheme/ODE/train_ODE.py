@@ -8,6 +8,7 @@ import scipy.io as sio
 from dataloader_3D import Dataloader_3D
 from model_ODE import Model_3D
 import sys
+import time
 
 # model_evaluation
 def eval(model, loader, total, m):
@@ -31,6 +32,13 @@ def eval(model, loader, total, m):
     batch_num = 0
     # count predicted instants between two times of beam training
     d_sery = np.linspace(np.float32(1) / m / 2, np.float32(1) - np.float32(1) / m / 2, num=m)
+    # metrics
+    se_pred = 0.0
+    se_opt = 0.0
+    qos_hits = 0
+    ang_err = 0.0
+    total_pred = 0
+    start_time = time.time()
 
     # evaluate validation set
     while not done:
@@ -93,6 +101,18 @@ def eval(model, loader, total, m):
                         # counting normalized beamforming gain
                         BL[loss_count, d_count] = BL[loss_count, d_count] + (beam_power[i, j, train_index] / max(
                             beam_power[i, j, :])) ** 2
+                        # additional metrics
+                        pred_power = beam_power[i, j, train_index]
+                        opt_power = max(beam_power[i, j, :])
+                        se_pred += np.log2(1 + pred_power)
+                        se_opt += np.log2(1 + opt_power)
+                        if pred_power >= 0.8 * opt_power:
+                            qos_hits += 1
+                        angle_step = 2 * np.pi / beam_power.shape[2]
+                        angle_pred = (train_index + 0.5) * angle_step - np.pi
+                        angle_true = (gt_labels[i, j] + 0.5) * angle_step - np.pi
+                        ang_err += np.abs(angle_pred - angle_true)
+                        total_pred += 1
             running_loss += loss.data.cpu()
     # average accuracy
     acur = float(P) / (P + N)
@@ -100,13 +120,22 @@ def eval(model, loader, total, m):
     losses = running_loss / batch_num
     # average beam power loss
     BL = BL / batch_num / 32
+    # other metrics
+    se_ratio = se_pred / se_opt if se_opt > 0 else 0
+    qos_prob = qos_hits / total_pred if total_pred > 0 else 0
+    angular_error = ang_err / total_pred if total_pred > 0 else 0
+    inference_time = time.time() - start_time
     # print results
     print("Accuracy: %.3f" % (acur))
     print("Loss: %.3f" % (losses))
     print("Beam power loss:")
     print(BL.T)
+    print("Spectral efficiency ratio: %.3f" % (se_ratio))
+    print("QoS probability: %.3f" % (qos_prob))
+    print("Mean angular error (rad): %.3f" % (angular_error))
+    print("Inference time (s): %.3f" % (inference_time))
 
-    return acur, losses, BL
+    return acur, losses, BL, se_ratio, qos_prob, angular_error, inference_time
 
 
 # main function for model training and evaluation
@@ -142,6 +171,10 @@ def main():
         acur_eval = []
         loss_eval = []
         BL_eval = np.zeros((10, m, epoch, t))  # normalized beamforming gain
+        se_eval = []
+        qos_eval = []
+        ang_eval = []
+        time_eval = []
         loss_train = []
 
         # first loop for training runnings
@@ -219,10 +252,14 @@ def main():
                 model.eval()
                 print('the evaling set:')
                 if 1:
-                    acur, losses, BL = eval(model, eval_loader, total, m)
+                    acur, losses, BL, se_ratio, qos_prob, ang_err, inf_time = eval(model, eval_loader, total, m)
                     acur_eval.append(acur)
                     loss_eval.append(losses)
                     BL_eval[:, :, e, tt] = np.squeeze(BL)
+                    se_eval.append(se_ratio)
+                    qos_eval.append(qos_prob)
+                    ang_eval.append(ang_err)
+                    time_eval.append(inf_time)
                 # learning rate decay
                 lr_decay.step(losses)
                 # train mode, where dropout is on
@@ -230,8 +267,14 @@ def main():
 
                 # save results into mat file
                 mat_name = info + '.mat'
-                sio.savemat(mat_name, {'acur_eval': acur_eval, 'loss_train': loss_train, 'loss_eval': loss_eval,
-                                       'BL_eval': BL_eval})
+                sio.savemat(mat_name, {'acur_eval': acur_eval,
+                                       'loss_train': loss_train,
+                                       'loss_eval': loss_eval,
+                                       'BL_eval': BL_eval,
+                                       'se_eval': se_eval,
+                                       'qos_eval': qos_eval,
+                                       'ang_eval': ang_eval,
+                                       'time_eval': time_eval})
 
 if __name__ == '__main__':
     main()
