@@ -7,7 +7,8 @@ params.scene_last = 1;
 
 %%%% DeepMIMO parameters set %%%%
 % Active base stations
-params.active_BS = 1 : 12;          % Includes the numbers of the active BSs (values from 1-18 for 'O1')
+% Consider several distributed BSs for large-scale MIMO deployment
+params.active_BS = [1 5 9];          % Distributed active BS indices (values from 1-18 for 'O1')
 
 % Active users
 params.active_user_first = 1;       % The first row of the considered receivers section (check the scenario description for the receiver row map)
@@ -19,14 +20,16 @@ params.row_subsampling = 1;       % Randomly select round(row_subsampling*(activ
 params.user_subsampling = 1;      % Randomly select round(user_subsampling*number_of_users_in_row) users in each row
 
 % Number of BS Antenna
-params.num_ant_x=1;                 % Number of the UPA antenna array on the x-axis
-params.num_ant_y=64;                % Number of the UPA antenna array on the y-axis
-params.num_ant_z=1;                 % Number of the UPA antenna array on the z-axis
+% Enhanced array to support 3D beamforming with low-altitude coverage
+params.num_ant_x = 8;                % Number of the UPA antenna array on the x-axis
+params.num_ant_y = 64;               % Number of the UPA antenna array on the y-axis
+params.num_ant_z = 8;                % Number of the UPA antenna array on the z-axis
                                     % Note: The axes of the antennas match the axes of the ray-tracing scenario
 
-params.num_ant_MS_x=1;              % Number of the UPA antenna array on the x-axis
-params.num_ant_MS_y=1;              % Number of the UPA antenna array on the y-axis
-params.num_ant_MS_z=1;              % Number of the UPA antenna array on the z-axis
+% UE antenna configuration for 3D reception
+params.num_ant_MS_x = 1;             % Number of the UPA antenna array on the x-axis
+params.num_ant_MS_y = 1;             % Number of the UPA antenna array on the y-axis
+params.num_ant_MS_z = 2;             % Number of the UPA antenna array on the z-axis
 
 % Antenna spacing
 params.ant_spacing=.5;              % ratio of the wavelength; for half wavelength enter .5
