@@ -1,0 +1,2 @@
+Scenario dataset file from: deepmimo.net [1].
+[1] A. Alkhateeb, “DeepMIMO: A generic deep learning dataset for millimeter wave and massive MIMO applications,” in Proc. ITA, Feb. 2019, pp. 1–8.
