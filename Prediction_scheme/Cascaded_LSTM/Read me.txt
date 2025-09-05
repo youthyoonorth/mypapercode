@@ -1,0 +1,7 @@
+1. Enter ''python train_icc.py'' for running this file.
+2. File function:
+train_icc: main program;
+model_icc: deep learning model;
+dataloader_3D: data loader.
+3. Related work:
+K. Ma, D. He, H. Sun, and Z. Wang, “Deep learning assisted mmWave beam prediction with prior low-frequency information,” in Proc. ICC, Jun. 14–23, 2021, pp. 1–6.

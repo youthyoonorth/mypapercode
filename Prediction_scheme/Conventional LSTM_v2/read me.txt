@@ -1,0 +1,8 @@
+1. Enter ''python train_LSTM.py'' for running this file.
+2. File function:
+train_LSTM: main program;
+model_lstm: deep learning model;
+eval_dataloader_3D: data loader for evaluation set, i.e., \tau \in {0.1, 0.2, ..., 0.9}.
+train_dataloader_3D: data loader for training set, i.e., \tau is randomly generated.
+3. Related work:
+H. Echigo, Y. Cao, M. Bouazizi, and T. Ohtsuki, “A deep learning-based low overhead beam selection in mmWave communications,” IEEE Trans. Veh. Tech., vol. 70, no. 1, pp. 682–691, Jan. 2021.

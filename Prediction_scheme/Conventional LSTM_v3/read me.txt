@@ -1,0 +1,15 @@
+1. Enter ''python train_LSTM.py'' for training the model;
+   Enter ''python test_LSTM.py'' for testing the model.
+
+Note: the trained models can be downloaded from the link https://cloud.tsinghua.edu.cn/d/e3b3793cb4ed4950be66/.
+
+2. File function:
+train_LSTM: the main program for model training and validation;
+test_LSTM: the main program for model testing;
+model_lstm: deep learning model;
+eval_dataloader_3D: data loader for validation set, i.e., \tau \in {0.1, 0.2, ..., 0.9}.
+train_dataloader_3D: data loader for training set, i.e., \tau is randomly generated.
+test_dataloader_3D: data loader for testing (evaluation) set, i.e., \tau \in {0.01, 0.02, ..., 0.99};
+
+3. Related work:
+H. Echigo, Y. Cao, M. Bouazizi, and T. Ohtsuki, “A deep learning-based low overhead beam selection in mmWave communications,” IEEE Trans. Veh. Tech., vol. 70, no. 1, pp. 682–691, Jan. 2021.

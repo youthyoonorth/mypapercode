@@ -1,0 +1,6 @@
+1. Enter ''python train_ODE.py'' for running this file.
+2. File function:
+train_ODE: main program;
+model_ODE: deep learning model;
+eval_dataloader_3D: data loader for evaluation set, i.e., \tau \in {0.1, 0.2, ..., 0.9}.
+train_dataloader_3D: data loader for training set, i.e., \tau is randomly generated.

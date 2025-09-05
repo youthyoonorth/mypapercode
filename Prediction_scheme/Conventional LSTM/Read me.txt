@@ -1,0 +1,7 @@
+1. Enter ''python train_LSTM.py'' for running this file.
+2. File function:
+train_LSTM: main program;
+model_lstm: deep learning model;
+dataloader_3D: data loader.
+3. Related work:
+H. Echigo, Y. Cao, M. Bouazizi, and T. Ohtsuki, “A deep learning-based low overhead beam selection in mmWave communications,” IEEE Trans. Veh. Tech., vol. 70, no. 1, pp. 682–691, Jan. 2021.

@@ -1,0 +1,3 @@
+original version (corresponding to original-version training set): \tau = {0.1, 0.2, ..., 0.9} for both training and evaluation sets.
+v2 (corresponding to v2 training set): \tau = {0.1, 0.2, ..., 0.9} for evaluation set, while \tau is randomly generated for training set.
+v3 (corresponding to v3 training set): \tau =  {0.01, 0.02, ..., 0.99} for evaluation set, while \tau is randomly generated for training set.

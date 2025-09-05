@@ -1,0 +1,5 @@
+1. Enter ''python train_ODE.py'' for running this file.
+2. File function:
+train_ODE: main program;
+model_ODE: deep learning model;
+dataloader_3D: data loader.

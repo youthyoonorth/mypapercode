@@ -1,0 +1,8 @@
+1. Enter ''python train_icc.py'' for running this file.
+2. File function:
+train_icc: main program;
+model_icc: deep learning model;
+eval_dataloader_3D: data loader for evaluation set, i.e., \tau \in {0.1, 0.2, ..., 0.9}.
+train_dataloader_3D: data loader for training set, i.e., \tau is randomly generated.
+3. Related work:
+K. Ma, D. He, H. Sun, and Z. Wang, “Deep learning assisted mmWave beam prediction with prior low-frequency information,” in Proc. ICC, Jun. 14–23, 2021, pp. 1–6.

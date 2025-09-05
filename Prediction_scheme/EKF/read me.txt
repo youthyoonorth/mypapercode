@@ -1,0 +1,4 @@
+1. Run ''EKF_beam_tracking.m'' for performing EKF based beam tracking method.
+2. File function:
+EKF_beam_tracking.m: main file for implementing EKF (it could be used for both \tau = {0.1,0.2,...,0.9} and \tau = {0.01,0.02,...,0.99} with a few modifications);
+MUSIC: MUSIC algorithm for initial angle estimation.
