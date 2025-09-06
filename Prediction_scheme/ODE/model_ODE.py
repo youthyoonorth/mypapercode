@@ -71,13 +71,18 @@ class Model_3D(nn.Module):
         self,
         in_features=256,
         hidden_size=256,
-        out_feature=64,
+        out_feature=None,
         return_sequences=True,
         solver_type="fixed_euler",
     ):
         super(Model_3D, self).__init__()
         self.in_features = in_features
         self.hidden_size = hidden_size
+        # ``out_feature`` denotes the number of beams to predict.  In the
+        # original implementation this value was fixed to 64 which made the
+        # model unusable for data sets with a different number of beams.  The
+        # argument is now optional; if ``None`` the model will infer the value
+        # from the input during the first forward pass.
         self.out_feature = out_feature
         self.return_sequences = return_sequences
 
@@ -99,9 +104,26 @@ class Model_3D(nn.Module):
         # LSTM layer for input learning
         self.lstm1 = nn.LSTMCell(input_size=256, hidden_size=256)
 
-        # FC for output
+        # FC for output.  It is created lazily if ``out_feature`` is not
+        # provided at construction time.
         self.drop = nn.Dropout(0.3)
-        self.fc = nn.Linear(self.hidden_size, self.out_feature)
+        if out_feature is not None:
+            self.fc = nn.Linear(self.hidden_size, out_feature)
+        else:
+            # Will be initialised once the beam dimension is known.
+            self.fc = None
+
+    def _init_fc(self, x):
+        """Initialise the output layer based on the input tensor.
+
+        The dataloader provides tensors with shape ``(B, 2, L, P)`` where ``P``
+        is the number of beams.  When ``out_feature`` is ``None`` we build the
+        final linear layer using this dimension the first time a forward pass is
+        executed.
+        """
+        if self.fc is None:
+            self.out_feature = x.size(-1)
+            self.fc = nn.Linear(self.hidden_size, self.out_feature).to(x.device)
 
     # timespans: number of beam trainings
     # pre_points: number of predicted instants between two times of beam training
@@ -109,6 +131,11 @@ class Model_3D(nn.Module):
         device = x.device
         batch_size = x.size(0)
         seq_len = timespans
+
+        # Create the output layer if it has not been initialised yet.  This
+        # allows the model to adapt to inputs with an arbitrary number of
+        # beams.
+        self._init_fc(x)
 
         outputs = []
         last_output = torch.zeros((batch_size, self.out_feature), device=device)

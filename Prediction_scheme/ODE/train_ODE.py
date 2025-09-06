@@ -9,6 +9,7 @@ from dataloader_3D import Dataloader_3D
 from model_ODE import Model_3D
 import sys
 import time
+import argparse
 
 # model_evaluation
 def eval(model, loader, total, m):
@@ -140,7 +141,7 @@ def eval(model, loader, total, m):
 
 # main function for model training and evaluation
 # output: accuracy, losses and normalized beamforming gain
-def main():
+def main(out_feature=64):
     # first loop for different velocities
     for velocity in [5, 10, 15, 20, 25, 30]:
         # save corresponding information
@@ -183,7 +184,7 @@ def main():
             # learning rate
             lr = 0.00003
             # model initialization
-            model = Model_3D()
+            model = Model_3D(out_feature=out_feature)
             model.to(device)
             # Adam optimizer
             optimizer = torch.optim.Adam(model.parameters(), lr, betas=(0.9, 0.999))
@@ -277,4 +278,8 @@ def main():
                                        'time_eval': time_eval})
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Train ODE model')
+    parser.add_argument('--beams', type=int, default=64,
+                        help='number of beams to predict (out_feature)')
+    args = parser.parse_args()
+    main(out_feature=args.beams)
