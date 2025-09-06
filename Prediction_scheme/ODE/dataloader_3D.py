@@ -4,39 +4,51 @@ from os.path import isfile, join
 import scipy.io as sio
 import numpy as np
 import torch
-import math
-from collections import Counter
 
 
 class Dataloader_3D():
     def __init__(self, path='', batch_size=32, device='cpu'):
         self.batch_size = batch_size
         self.device = device
-        self.files = [join(path, f) for f in listdir(path) if isfile(join(path, f))]
-        for i, f in enumerate(self.files):
-            if not f.split('.')[-1] == 'mat':
-                del (self.files[i])
+        # gather all .mat files in the provided directory
+        self.files = [
+            join(path, f)
+            for f in listdir(path)
+            if isfile(join(path, f)) and f.endswith('.mat')
+        ]
         self.reset()
 
     def reset(self):
         self.done = False
         self.unvisited_files = [f for f in self.files]
 
+        # determine number of beams from the first file
+        self.num_beams = 0
+        if self.unvisited_files:
+            sample = sio.loadmat(self.unvisited_files[0])
+            self.num_beams = sample['beam_power'].shape[2]
+
         # batch_size * 2 * length * num of beam
-        self.buffer = np.zeros((0, 2, 101, 64))
+        self.buffer = np.zeros((0, 2, 101, self.num_beams))
 
         # batch_size * length
         self.buffer_label = np.zeros((0, 101))
 
         # batch_size * length * num of beam
-        self.buffer_beam_power = np.zeros((0, 101, 64))
+        self.buffer_beam_power = np.zeros((0, 101, self.num_beams))
 
     def load(self, file):
         data = sio.loadmat(file)
 
-        channels = data['MM_data'] # beam training received signal
-        labels = data['beam_label'] - 1 # optimal beam index label
-        beam_power = data['beam_power'] # beam amplitude
+        channels = data['MM_data']  # beam training received signal
+        labels = data['beam_label'] - 1  # optimal beam index label
+        beam_power = data['beam_power']  # beam amplitude
+
+        # ensure the beam dimension matches the expected value
+        num_beams = beam_power.shape[2]
+        assert (
+            num_beams == self.num_beams
+        ), f"Inconsistent beam dimension in {file}: expected {self.num_beams}, got {num_beams}"
 
         return channels, labels, beam_power
 
@@ -60,9 +72,9 @@ class Dataloader_3D():
 
         out_size = min(self.batch_size, self.buffer.shape[0])
         # get data from buffers
-        batch_channels = self.buffer[0 : out_size, :, :, :]
-        batch_labels = np.squeeze(self.buffer_label[0 : out_size, :])
-        batch_beam_power = np.squeeze(self.buffer_beam_power[0:out_size, :, :])
+        batch_channels = self.buffer[0:out_size, :, :, :]
+        batch_labels = self.buffer_label[0:out_size, :]
+        batch_beam_power = self.buffer_beam_power[0:out_size, :, :]
 
         self.buffer = np.delete(self.buffer, np.s_[0 : out_size], 0)
         self.buffer_label = np.delete(self.buffer_label, np.s_[0 : out_size], 0)
