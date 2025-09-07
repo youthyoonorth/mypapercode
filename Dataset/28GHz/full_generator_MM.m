@@ -13,7 +13,7 @@ params = read_params('parameters_mm.m');
 
 % determine the number of BS and antennas from the loaded parameters
 BS_num  = numel(params.active_BS);
-ant_num = params.num_ant_x * params.num_ant_y * params.num_ant_z;
+ant_num = prod(params.bs_antenna.shape);
 
 % for each row
 for i = 1 : row_num
@@ -32,7 +32,8 @@ for i = 1 : row_num
     for j = 1 : numel(dataset_MM)
         for k = 1 : UE_row_num
             ch = squeeze(sum(dataset_MM{j}.user{k}.channel, 3));
-            if params.num_ant_MS_z > 1
+            ue_shape = params.ue_antenna.shape;
+            if numel(ue_shape) >= 3 && ue_shape(3) > 1
                 ch = sum(ch, 1);
             end
             MM_channel(j, k, :) = ch;
