@@ -21,30 +21,23 @@ params.user_subsampling = 1;      % Randomly select round(user_subsampling*numbe
 
 % Number of BS Antenna
 % Enhanced array to support 3D beamforming with low-altitude coverage
-params.num_ant_x = 8;                % Number of the UPA antenna array on the x-axis
-params.num_ant_y = 64;               % Number of the UPA antenna array on the y-axis
-params.num_ant_z = 8;                % Number of the UPA antenna array on the z-axis
+params.num_BS_ant_x = 8;             % Number of the UPA antenna array on the x-axis
+params.num_BS_ant_y = 64;            % Number of the UPA antenna array on the y-axis
+params.num_BS_ant_z = 8;             % Number of the UPA antenna array on the z-axis
                                     % Note: The axes of the antennas match the axes of the ray-tracing scenario
 
 % UE antenna configuration for 3D reception
-params.num_ant_MS_x = 1;             % Number of the UPA antenna array on the x-axis
-params.num_ant_MS_y = 1;             % Number of the UPA antenna array on the y-axis
-params.num_ant_MS_z = 2;             % Number of the UPA antenna array on the z-axis
+params.num_MS_ant_x = 1;             % Number of the UPA antenna array on the x-axis
+params.num_MS_ant_y = 1;             % Number of the UPA antenna array on the y-axis
+params.num_MS_ant_z = 2;             % Number of the UPA antenna array on the z-axis
 
 % Antenna spacing
-params.ant_spacing=.5;              % ratio of the wavelength; for half wavelength enter .5
+params.ant_spacing_BS=.5;           % ratio of the wavelength; for half wavelength enter .5
 params.ant_spacing_MS=.5;           % ratio of the wavelength; for half wavelength enter .5
 
 % System parameters
 params.enable_BS2BSchannels=0;      % Enable (1) or disable (0) generation of the channels between basestations
 params.bandwidth=0.1;               % The bandwidth in GHz
-params.transmit_power = 20;         % The transmit power in dBm
-params.pulse_shaping = 1;           % Pulse shaping choices: (1) No pulse shaping and matched filter,
-                                    % (2) sinc pulse shaping and matched filter, (3) raised cosine pulse shaping and matched filter,
-                                    % (4) user-defined pulse shaping and matched filter (Please edit the code in .\DeepMIMO_functions\userdefined_pulse.m).
-params.activate_RX_ideal_LPF = 0;   % Activate receive ideal LPF for pulse shaping choices 2, 3, and 4.
-params.rolloff_factor = 0.2;        % Raised cosine rolloff factor (a value between 0 and 1)
-params.pulse_upsampling_factor = 100;% Upsampling factor for generating sinc or raised cosine pulses
 
 % Channel parameters
 params.activate_FD_channels = 0;    % 1: activate frequency domain (FD) channel generation for OFDM systems
